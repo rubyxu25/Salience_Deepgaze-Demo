@@ -84,6 +84,14 @@ function dataUri(base64Png) {
   return `data:image/png;base64,${base64Png}`;
 }
 
+async function parseApiResponse(res) {
+  const contentType = (res.headers.get("content-type") || "").toLowerCase();
+  if (contentType.includes("application/json")) {
+    return { kind: "json", payload: await res.json() };
+  }
+  return { kind: "text", payload: await res.text() };
+}
+
 function renderJourney(items) {
   const container = el("journey");
   container.innerHTML = "";
@@ -262,8 +270,12 @@ function bindForm() {
 
     try {
       const res = await fetch("/api/run", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to run model.");
+      const parsed = await parseApiResponse(res);
+      if (parsed.kind !== "json") {
+        throw new Error(`Server returned non-JSON response (HTTP ${res.status}). Check Render logs.`);
+      }
+      const data = parsed.payload;
+      if (!res.ok) throw new Error(data.error || `Failed to run model (HTTP ${res.status}).`);
 
       el("img-original").src = dataUri(data.results.original);
       el("img-heatmap").src = dataUri(data.results.heatmap);
@@ -303,7 +315,11 @@ function bindForm() {
 
 async function loadContent() {
   const res = await fetch("/api/content");
-  const data = await res.json();
+  const parsed = await parseApiResponse(res);
+  if (parsed.kind !== "json") {
+    throw new Error(`Content API returned non-JSON response (HTTP ${res.status}).`);
+  }
+  const data = parsed.payload;
 
   state.stepsMeta = data.steps;
 
@@ -329,7 +345,11 @@ async function loadContent() {
 async function init() {
   bindModeToggle();
   bindForm();
-  await loadContent();
+  try {
+    await loadContent();
+  } catch (err) {
+    setText("run-status", err.message || "Failed to load content.");
+  }
 }
 
 init();
