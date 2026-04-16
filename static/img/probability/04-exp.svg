@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="220" viewBox="0 0 760 220">
+  <rect width="760" height="220" fill="#f6fbfb"/>
+  <rect x="40" y="45" width="250" height="130" rx="12" fill="#fff" stroke="#b8d7d3"/>
+  <text x="165" y="112" font-size="20" text-anchor="middle" fill="#1a2a32">L(x,y)</text>
+  <path d="M310 110 H430" stroke="#2b7a78" stroke-width="4" marker-end="url(#a)"/>
+  <text x="370" y="95" font-size="16" text-anchor="middle" fill="#2b7a78">exp(·)</text>
+  <rect x="450" y="45" width="270" height="130" rx="12" fill="#fff" stroke="#b8d7d3"/>
+  <text x="585" y="112" font-size="20" text-anchor="middle" fill="#1a2a32">P_raw(x,y) = exp(L)</text>
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2b7a78"/></marker></defs>
+</svg>

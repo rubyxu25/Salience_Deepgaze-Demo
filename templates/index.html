@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeepGaze IIE Visual Salience Explorer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero" id="hero">
+      <p class="kicker">Educational Demo</p>
+      <h1 id="intro-title">DeepGaze IIE Visual Salience Explorer</h1>
+      <p id="saliency-intro"></p>
+      <p id="deepgaze-intro"></p>
+      <p id="why-matters"></p>
+      <div class="bridge-box" id="bridge-statement"></div>
+    </section>
+
+    <section class="panel" id="mapping">
+      <h2>Classical Saliency Map vs DeepGaze IIE</h2>
+      <p class="muted">DeepGaze IIE does not simply draw a heatmap. It predicts a learned fixation distribution from image content plus center bias.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Traditional Saliency Logic</th><th>DeepGaze IIE Component</th><th>Interpretation</th></tr>
+          </thead>
+          <tbody id="mapping-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="probability-journey">
+      <h2 id="prob-journey-title">How The Image Becomes A Probabilistic Saliency Map</h2>
+      <p class="muted" id="prob-journey-subtitle"></p>
+      <div id="prob-journey-stages" class="prob-journey-stages"></div>
+      <p class="muted" id="prob-journey-footnote"></p>
+    </section>
+
+    <section class="panel" id="upload-run">
+      <h2>Upload and Run Demo</h2>
+      <form id="run-form" class="controls">
+        <label class="file-input">
+          <span>Input Image</span>
+          <input type="file" name="image" id="image-input" accept="image/*" required />
+        </label>
+
+        <label class="toggle-row" for="centerbias-toggle">
+          <span>Use center bias</span>
+          <input type="checkbox" id="centerbias-toggle" checked />
+        </label>
+
+        <label>
+          <span>Overlay opacity (<span id="alpha-value">0.45</span>)</span>
+          <input type="range" id="alpha-slider" min="0" max="1" value="0.45" step="0.05" />
+        </label>
+
+        <button type="submit" id="run-btn">Run Workflow</button>
+      </form>
+
+      <p class="status" id="run-status">Upload an image to start.</p>
+      <p class="model-note" id="model-note"></p>
+      <p class="model-note" id="centerbias-note"></p>
+      <p class="model-note" id="warning-note"></p>
+
+      <div class="result-grid" id="result-grid">
+        <figure>
+          <figcaption>Original Image</figcaption>
+          <img id="img-original" alt="Original upload" />
+        </figure>
+        <figure>
+          <figcaption>Predicted Heatmap</figcaption>
+          <img id="img-heatmap" alt="Predicted saliency heatmap" />
+        </figure>
+        <figure>
+          <figcaption>Overlay</figcaption>
+          <img id="img-overlay" alt="Heatmap overlay on original image" />
+        </figure>
+      </div>
+
+      <div class="download-row" id="download-row">
+        <a id="download-heatmap" download="heatmap.png">Download heatmap</a>
+        <a id="download-overlay" download="overlay.png">Download overlay</a>
+      </div>
+
+      <div class="legend-box">
+        <h3>Color Meaning</h3>
+        <p>Red/yellow: higher predicted fixation density. Blue: lower predicted fixation density.</p>
+        <p id="caution-text"></p>
+      </div>
+    </section>
+
+    <section class="panel" id="shape-tracing">
+      <h2>Data Transformation Journey</h2>
+      <p class="muted">From image file to probabilistic fixation map.</p>
+      <div class="journey" id="journey"></div>
+    </section>
+
+    <section class="panel" id="input-visual-pipeline">
+      <h2>Input-Driven Visual Pipeline</h2>
+      <p class="muted">Run an image to visualize how this specific input changes at each stage.</p>
+      <div id="visual-pipeline-status" class="muted">No run yet. Upload an image and click Run Workflow.</div>
+      <div id="visual-pipeline" class="visual-pipeline"></div>
+    </section>
+
+    <section class="panel" id="workflow">
+      <div class="workflow-head">
+        <h2>Interactive Workflow Walkthrough</h2>
+        <div class="mode-switch" role="tablist" aria-label="Explanation mode">
+          <button type="button" class="mode-btn active" data-mode="simple">Simple explanation</button>
+          <button type="button" class="mode-btn" data-mode="technical">Technical explanation</button>
+        </div>
+      </div>
+      <div class="tooltip-note">
+        Hover terms:
+        <span class="term" title="A multidimensional numeric container used by deep learning frameworks.">tensor</span>,
+        <span class="term" title="A log-scale representation of probability values.">log-density</span>,
+        <span class="term" title="A prior map encoding the tendency to look near the image center.">center bias</span>,
+        <span class="term" title="Reordering dimensions, e.g. from HWC to CHW.">transpose</span>
+      </div>
+      <div id="step-cards" class="step-cards"></div>
+    </section>
+
+    <section class="panel" id="code-breakdown">
+      <h2>Code Breakdown</h2>
+      <p class="muted">The original DeepGaze demo script is decomposed into logical blocks below and mirrored in the workflow cards.</p>
+      <div id="code-blocks" class="code-blocks"></div>
+    </section>
+
+    <section class="panel" id="interpretation">
+      <h2>Interpretation and Limitations</h2>
+      <div id="interpretation-list" class="interpretation-list"></div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

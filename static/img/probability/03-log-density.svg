@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="220" viewBox="0 0 760 220">
+  <rect width="760" height="220" fill="#f6fbfb"/>
+  <rect x="40" y="40" width="680" height="140" rx="12" fill="#fff" stroke="#b8d7d3"/>
+  <text x="380" y="78" font-size="20" text-anchor="middle" fill="#1a2a32">Log-density map L(x,y)</text>
+  <rect x="90" y="95" width="580" height="55" rx="8" fill="#f1f6f8"/>
+  <text x="380" y="128" font-size="24" text-anchor="middle" fill="#2a516f">L(x,y) ≈ log p(fixation | image)</text>
+</svg>

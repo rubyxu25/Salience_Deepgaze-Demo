@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="220" viewBox="0 0 760 220">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#173f9e"/>
+      <stop offset="40%" stop-color="#1eb6ff"/>
+      <stop offset="70%" stop-color="#ffd24a"/>
+      <stop offset="100%" stop-color="#d7263d"/>
+    </linearGradient>
+  </defs>
+  <rect width="760" height="220" fill="#f6fbfb"/>
+  <rect x="40" y="38" width="680" height="144" rx="12" fill="#fff" stroke="#b8d7d3"/>
+  <text x="380" y="76" font-size="20" text-anchor="middle" fill="#1a2a32">Probability Map -> Heatmap Visualization</text>
+  <rect x="90" y="100" width="580" height="36" rx="8" fill="url(#g)"/>
+  <text x="90" y="158" font-size="14" fill="#486068">low probability</text>
+  <text x="670" y="158" font-size="14" text-anchor="end" fill="#486068">high probability</text>
+</svg>

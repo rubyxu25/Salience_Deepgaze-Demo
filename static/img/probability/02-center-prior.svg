@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="220" viewBox="0 0 760 220">
+  <rect width="760" height="220" fill="#f6fbfb"/>
+  <rect x="30" y="50" width="220" height="120" rx="12" fill="#fff" stroke="#b8d7d3"/>
+  <text x="140" y="100" font-size="18" text-anchor="middle" fill="#1a2a32">Content Score</text>
+  <text x="140" y="126" font-size="14" text-anchor="middle" fill="#486068">from image features</text>
+  <text x="290" y="118" font-size="42" fill="#2b7a78">+</text>
+  <rect x="350" y="50" width="220" height="120" rx="12" fill="#fff" stroke="#b8d7d3"/>
+  <circle cx="460" cy="110" r="44" fill="#f6c36c" opacity="0.55"/>
+  <text x="460" y="114" font-size="16" text-anchor="middle" fill="#1a2a32">Center Prior</text>
+  <path d="M590 110 H710" stroke="#2b7a78" stroke-width="4" marker-end="url(#a)"/>
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2b7a78"/></marker></defs>
+</svg>
