@@ -12,6 +12,11 @@
 
 * { box-sizing: border-box; }
 
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   background:
@@ -28,6 +33,7 @@ body {
   margin: 2rem auto 4rem;
   display: grid;
   gap: 1.2rem;
+  min-width: 0;
 }
 
 h1, h2, h3 { margin: 0 0 0.6rem; line-height: 1.25; }
@@ -41,6 +47,7 @@ h2 { font-size: clamp(1.3rem, 2vw, 1.65rem); }
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1.2rem 1.3rem;
+  min-width: 0;
 }
 
 .kicker {
@@ -123,6 +130,7 @@ button:hover { filter: brightness(1.05); }
   border-radius: 12px;
   border: 1px solid var(--line);
   background: #fff;
+  display: block;
 }
 
 .result-grid figure {
@@ -450,6 +458,7 @@ button:hover { filter: brightness(1.05); }
   .controls {
     grid-template-columns: 1fr;
     gap: 0.7rem;
+    min-width: 0;
   }
 
   .controls label,
@@ -466,6 +475,7 @@ button:hover { filter: brightness(1.05); }
   .visual-pipeline,
   .interpretation-list {
     grid-template-columns: 1fr;
+    min-width: 0;
   }
 
   .prob-stage-io,
@@ -509,6 +519,7 @@ button:hover { filter: brightness(1.05); }
 
   .step-body {
     padding: 0.75rem;
+    min-width: 0;
   }
 
   .takeaway {
@@ -519,6 +530,9 @@ button:hover { filter: brightness(1.05); }
   .code,
   .math-formula {
     font-size: 0.82rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .download-row {
@@ -576,6 +590,20 @@ button:hover { filter: brightness(1.05); }
     color: #3d6667;
     font-weight: 700;
     margin-bottom: 0.2rem;
+  }
+
+  .result-grid figure {
+    padding: 0.52rem;
+  }
+
+  .result-grid img,
+  .visual-stage-image,
+  .prob-stage-image,
+  .step-preview {
+    width: 100%;
+    height: min(42vh, 280px);
+    object-fit: contain;
+    background: #f4f9f8;
   }
 }
 
