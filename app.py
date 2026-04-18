@@ -6,7 +6,7 @@ from flask import Flask, jsonify, render_template, request
 from PIL import Image
 from werkzeug.utils import secure_filename
 
-from deepgaze_demo.config import ALLOWED_EXTENSIONS, MAX_UPLOAD_MB, UPLOAD_DIR
+from deepgaze_demo.config import ALLOWED_EXTENSIONS, MAX_INFERENCE_SIDE, MAX_UPLOAD_MB, UPLOAD_DIR
 from deepgaze_demo.content import (
     intro_content,
     interpretation_points,
@@ -22,6 +22,18 @@ app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
 ensure_dir(UPLOAD_DIR)
 
 runner = DeepGazeRunner(device="cpu")
+
+
+def _resize_for_inference(image: Image.Image, max_side: int) -> tuple[Image.Image, tuple[int, int] | None]:
+    width, height = image.size
+    longest = max(width, height)
+    if longest <= max_side:
+        return image, None
+
+    scale = max_side / float(longest)
+    new_size = (max(1, int(round(width * scale))), max(1, int(round(height * scale))))
+    resized = image.resize(new_size, Image.Resampling.LANCZOS)
+    return resized, (width, height)
 
 
 @app.route("/")
@@ -65,12 +77,20 @@ def run_demo():
         pil_img = Image.open(save_path).convert("RGB")
     except Exception:
         return jsonify({"error": "Could not decode image."}), 400
+    pil_img, original_size = _resize_for_inference(pil_img, MAX_INFERENCE_SIDE)
 
     artifacts = runner.run(
         pil_image=pil_img,
         use_centerbias=use_centerbias,
         overlay_alpha=overlay_alpha,
     )
+    if original_size is not None:
+        artifacts.warnings.append(
+            (
+                "Input image was resized before inference to reduce memory usage: "
+                f"{original_size[0]}x{original_size[1]} -> {pil_img.size[0]}x{pil_img.size[1]}."
+            )
+        )
 
     return jsonify(
         {
