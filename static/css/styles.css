@@ -129,6 +129,7 @@ button:hover { filter: brightness(1.05); }
   margin-top: 0.8rem;
   display: none;
   gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
 .download-row a {
@@ -380,7 +381,106 @@ button:hover { filter: brightness(1.05); }
   background: #fcfffe;
 }
 
-@media (max-width: 800px) {
-  .page-shell { width: min(96vw, 760px); margin-top: 1rem; }
+@media (max-width: 900px) {
+  .page-shell { width: min(96vw, 860px); margin-top: 1rem; }
   .hero, .panel { padding: 1rem; }
+}
+
+@media (max-width: 640px) {
+  body {
+    line-height: 1.45;
+  }
+
+  .page-shell {
+    width: 100%;
+    padding: 0 0.7rem;
+    margin: 0.8rem auto 2rem;
+    gap: 0.8rem;
+  }
+
+  .hero, .panel {
+    padding: 0.85rem;
+    border-radius: 14px;
+  }
+
+  h1 {
+    font-size: 1.9rem;
+  }
+
+  h2 {
+    font-size: 1.35rem;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .toggle-row {
+    gap: 0.7rem;
+    justify-content: flex-start;
+  }
+
+  .result-grid,
+  .visual-pipeline,
+  .interpretation-list {
+    grid-template-columns: 1fr;
+  }
+
+  .prob-stage-io,
+  .step-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .journey-item {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .workflow-head {
+    align-items: stretch;
+  }
+
+  .mode-switch {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 12px;
+  }
+
+  .mode-btn {
+    border-radius: 10px;
+    padding: 0.55rem 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  th, td {
+    padding: 0.62rem 0.36rem;
+    font-size: 0.92rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .kicker {
+    font-size: 0.7rem;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  button,
+  input[type="file"],
+  input[type="range"] {
+    min-height: 42px;
+  }
+
+  .download-row a {
+    width: 100%;
+    text-align: center;
+  }
 }
