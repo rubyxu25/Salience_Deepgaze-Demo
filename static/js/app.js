@@ -34,9 +34,9 @@ function renderMapping(rows) {
   rows.forEach((row) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${escapeHtml(row.classic)}</td>
-      <td>${escapeHtml(row.deepgaze)}</td>
-      <td>${escapeHtml(row.meaning)}</td>
+      <td data-label="Traditional Saliency Logic">${escapeHtml(row.classic)}</td>
+      <td data-label="DeepGaze IIE Component">${escapeHtml(row.deepgaze)}</td>
+      <td data-label="Interpretation">${escapeHtml(row.meaning)}</td>
     `;
     body.appendChild(tr);
   });

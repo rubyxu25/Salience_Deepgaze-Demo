@@ -125,6 +125,20 @@ button:hover { filter: brightness(1.05); }
   background: #fff;
 }
 
+.result-grid figure {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.6rem;
+}
+
+.result-grid figcaption {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.45rem;
+}
+
 .download-row {
   margin-top: 0.8rem;
   display: none;
@@ -389,31 +403,58 @@ button:hover { filter: brightness(1.05); }
 @media (max-width: 640px) {
   body {
     line-height: 1.45;
+    font-size: 16px;
+    background:
+      radial-gradient(circle at 18% 10%, #ffffff 0%, transparent 50%),
+      var(--bg);
   }
 
   .page-shell {
     width: 100%;
-    padding: 0 0.7rem;
-    margin: 0.8rem auto 2rem;
+    padding: 0 0.75rem;
+    margin: 0.7rem auto 1.6rem;
     gap: 0.8rem;
   }
 
   .hero, .panel {
-    padding: 0.85rem;
+    padding: 0.9rem;
     border-radius: 14px;
+    box-shadow: 0 6px 16px rgba(18, 32, 38, 0.06);
+  }
+
+  .panel h2 {
+    margin-bottom: 0.5rem;
   }
 
   h1 {
-    font-size: 1.9rem;
+    font-size: 1.75rem;
+    line-height: 1.2;
   }
 
   h2 {
-    font-size: 1.35rem;
+    font-size: 1.2rem;
+    line-height: 1.25;
+  }
+
+  .kicker {
+    font-size: 0.69rem;
+    letter-spacing: 0.1em;
+  }
+
+  .bridge-box {
+    border-left-width: 3px;
+    padding: 0.7rem 0.75rem;
+    font-size: 0.96rem;
   }
 
   .controls {
     grid-template-columns: 1fr;
     gap: 0.7rem;
+  }
+
+  .controls label,
+  .file-input {
+    font-size: 0.97rem;
   }
 
   .toggle-row {
@@ -452,25 +493,99 @@ button:hover { filter: brightness(1.05); }
     border-radius: 10px;
     padding: 0.55rem 0.6rem;
     font-size: 0.9rem;
+    min-height: 42px;
   }
 
-  th, td {
-    padding: 0.62rem 0.36rem;
-    font-size: 0.92rem;
+  .step-head {
+    padding: 0.75rem 0.75rem;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .step-head span:last-child {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .step-body {
+    padding: 0.75rem;
+  }
+
+  .takeaway {
+    padding: 0.6rem 0.65rem;
+    font-size: 0.9rem;
+  }
+
+  .code,
+  .math-formula {
+    font-size: 0.82rem;
+  }
+
+  .download-row {
+    display: none;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .download-row a {
+    width: 100%;
+    text-align: center;
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+  }
+
+  table,
+  thead,
+  tbody,
+  tr,
+  td {
+    display: block;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody tr {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    margin-bottom: 0.62rem;
+    padding: 0.18rem 0;
+  }
+
+  tbody td {
+    border: 0;
+    border-top: 1px solid #eef3f1;
+    padding: 0.52rem 0.65rem;
+    font-size: 0.93rem;
+    line-height: 1.35;
+  }
+
+  tbody td:first-child {
+    border-top: 0;
+  }
+
+  tbody td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #3d6667;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
   }
 }
 
 @media (max-width: 480px) {
-  .kicker {
-    font-size: 0.7rem;
-  }
-
   h1 {
-    font-size: 1.6rem;
+    font-size: 1.48rem;
   }
 
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.12rem;
   }
 
   button,
@@ -479,8 +594,11 @@ button:hover { filter: brightness(1.05); }
     min-height: 42px;
   }
 
-  .download-row a {
-    width: 100%;
-    text-align: center;
+  .hero, .panel {
+    padding: 0.78rem;
+  }
+
+  .status, .model-note, .muted {
+    font-size: 0.93rem;
   }
 }
