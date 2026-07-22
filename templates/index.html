@@ -15,6 +15,9 @@
       <p id="deepgaze-intro"></p>
       <p id="why-matters"></p>
       <div class="bridge-box" id="bridge-statement"></div>
+      <div class="hero-actions">
+        <a class="doc-link" href="/getting-started" target="_blank" rel="noopener">Open Python Getting Started Guide</a>
+      </div>
     </section>
 
     <section class="panel" id="mapping">
@@ -42,6 +45,8 @@
       <form id="run-form" class="controls">
         <label class="file-input">
           <span>Input Image</span>
+          <span class="file-picker-control">Choose Image</span>
+          <span class="file-name" id="file-name">No file chosen</span>
           <input type="file" name="image" id="image-input" accept="image/*" required />
         </label>
 
@@ -55,7 +60,7 @@
           <input type="range" id="alpha-slider" min="0" max="1" value="0.45" step="0.05" />
         </label>
 
-        <button type="submit" id="run-btn">Run Workflow</button>
+        <button type="submit" id="run-btn">Upload and Run</button>
       </form>
 
       <p class="status" id="run-status">Upload an image to start.</p>

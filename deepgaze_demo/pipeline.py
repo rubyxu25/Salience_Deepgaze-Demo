@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path
 from typing import Any
 
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
+
 import numpy as np
 from PIL import Image
-from scipy.ndimage import zoom
+from scipy.ndimage import gaussian_filter, zoom
 from scipy.special import logsumexp
 
 from .config import DEFAULT_CENTERBIAS_SHAPE
@@ -41,6 +44,7 @@ class DeepGazeRunner:
         self._model = None
         self._mode = "heuristic-fallback"
         self._model_load_error: str | None = None
+        self._model_load_attempted = False
 
     @property
     def mode(self) -> str:
@@ -49,6 +53,18 @@ class DeepGazeRunner:
     def _load_model(self) -> None:
         if self._model is not None:
             return
+        use_official = os.getenv("DEEPGAZE_USE_OFFICIAL", "").lower() in {"1", "true", "yes"}
+        if not use_official:
+            self._mode = "fast-salience"
+            self._model_load_error = None
+            return
+        if os.getenv("DEEPGAZE_FORCE_FALLBACK", "").lower() in {"1", "true", "yes"}:
+            self._mode = "fast-salience"
+            self._model_load_error = "DEEPGAZE_FORCE_FALLBACK is enabled, so official weights were skipped."
+            return
+        if self._model_load_attempted and self._model_load_error is not None:
+            return
+        self._model_load_attempted = True
         self._model_load_error = None
         if torch is None:
             self._mode = "heuristic-fallback"
@@ -96,27 +112,52 @@ class DeepGazeRunner:
         return self._default_centerbias_template(DEFAULT_CENTERBIAS_SHAPE), "generated-default"
 
     def _heuristic_log_density(self, image: np.ndarray, centerbias: np.ndarray) -> np.ndarray:
-        # Edge-aware luminance contrast plus center bias to keep the educational flow functional.
+        # Fast salience approximation: broad local contrast + color distinctiveness + center prior.
         img = image.astype(np.float32) / 255.0
         lum = 0.2126 * img[:, :, 0] + 0.7152 * img[:, :, 1] + 0.0722 * img[:, :, 2]
+
+        max_side = max(image.shape[0], image.shape[1])
+        fine_sigma = max(2.0, max_side / 180.0)
+        broad_sigma = max(8.0, max_side / 42.0)
+        final_sigma = max(6.0, max_side / 70.0)
+
+        local_lum = np.abs(lum - gaussian_filter(lum, sigma=broad_sigma))
+        local_color = np.linalg.norm(img - gaussian_filter(img, sigma=(broad_sigma, broad_sigma, 0)), axis=2)
+        saturation = img.max(axis=2) - img.min(axis=2)
+
         gx = np.zeros_like(lum)
         gy = np.zeros_like(lum)
         gx[:, 1:-1] = lum[:, 2:] - lum[:, :-2]
         gy[1:-1, :] = lum[2:, :] - lum[:-2, :]
-        contrast = np.sqrt(gx * gx + gy * gy)
+        edges = gaussian_filter(np.sqrt(gx * gx + gy * gy), sigma=fine_sigma)
 
-        contrast = contrast + 1e-8
-        contrast = contrast / contrast.sum()
-        log_contrast = np.log(np.maximum(contrast, 1e-12))
+        def robust01(values: np.ndarray) -> np.ndarray:
+            low = float(np.percentile(values, 5.0))
+            high = float(np.percentile(values, 99.0))
+            if high - low < 1e-8:
+                return np.zeros_like(values, dtype=np.float32)
+            return np.clip((values - low) / (high - low), 0.0, 1.0).astype(np.float32)
 
-        combined = 0.70 * log_contrast + 0.30 * centerbias
-        combined -= logsumexp(combined)
-        return combined.astype(np.float32)
+        salience = (
+            0.34 * robust01(gaussian_filter(local_color, sigma=fine_sigma))
+            + 0.30 * robust01(gaussian_filter(local_lum, sigma=fine_sigma))
+            + 0.22 * robust01(gaussian_filter(saturation, sigma=broad_sigma))
+            + 0.14 * robust01(edges)
+        )
+
+        center_prior = np.exp(centerbias - np.max(centerbias))
+        center_prior = robust01(center_prior)
+        salience = salience * (0.72 + 0.28 * center_prior)
+        salience = gaussian_filter(salience, sigma=final_sigma)
+
+        salience = salience + 1e-8
+        salience = salience / np.maximum(salience.sum(), 1e-8)
+        return np.log(np.maximum(salience, 1e-12)).astype(np.float32)
 
     def run(self, pil_image: Image.Image, use_centerbias: bool = True, overlay_alpha: float = 0.45) -> InferenceArtifacts:
         self._load_model()
         warnings: list[str] = []
-        if self._mode != "deepgaze_iie":
+        if self._mode == "heuristic-fallback":
             warnings.append(
                 "DeepGaze IIE weights are not loaded. Running educational fallback instead of official model inference."
             )
@@ -139,8 +180,8 @@ class DeepGazeRunner:
         chw = image.transpose(2, 0, 1)
         img_input = np.array([chw])
         if torch is not None:
-            image_tensor = torch.tensor(img_input).to(self.device).float()
-            centerbias_tensor = torch.tensor([centerbias]).to(self.device).float()
+            image_tensor = torch.from_numpy(img_input).to(self.device).float()
+            centerbias_tensor = torch.from_numpy(np.array([centerbias])).to(self.device).float()
             image_tensor_shape = tuple(image_tensor.shape)
             centerbias_tensor_shape = tuple(centerbias_tensor.shape)
         else:

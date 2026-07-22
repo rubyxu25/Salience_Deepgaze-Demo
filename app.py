@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_file
 from PIL import Image
 from werkzeug.utils import secure_filename
 
@@ -39,6 +39,15 @@ def _resize_for_inference(image: Image.Image, max_side: int) -> tuple[Image.Imag
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.get("/getting-started")
+def getting_started():
+    return send_file(
+        Path("docs") / "deepgaze_iie_getting_started.md",
+        mimetype="text/markdown; charset=utf-8",
+        download_name="deepgaze_iie_getting_started.md",
+    )
 
 
 @app.get("/api/content")
@@ -84,7 +93,7 @@ def run_demo():
         use_centerbias=use_centerbias,
         overlay_alpha=overlay_alpha,
     )
-    if original_size is not None:
+    if original_size is not None and artifacts.model_mode not in {"fast-salience"}:
         artifacts.warnings.append(
             (
                 "Input image was resized before inference to reduce memory usage: "

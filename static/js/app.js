@@ -253,6 +253,12 @@ function bindForm() {
     setText("alpha-value", slider.value);
   });
 
+  const imageInput = el("image-input");
+  imageInput.addEventListener("change", () => {
+    const fileName = imageInput.files.length ? imageInput.files[0].name : "No file chosen";
+    setText("file-name", fileName);
+  });
+
   el("run-form").addEventListener("submit", async (ev) => {
     ev.preventDefault();
     const fileInput = el("image-input");
@@ -295,7 +301,7 @@ function bindForm() {
         "model-note",
         data.model_mode === "deepgaze_iie"
           ? "Model mode: DeepGaze IIE"
-          : "Model mode: educational fallback (install deepgaze_pytorch to use DeepGaze IIE weights)."
+          : "Model mode: fast salience approximation."
       );
       setText("centerbias-note", `Center bias source: ${data.centerbias_source}`);
       const warningText = (data.warnings || []).join(" ");

@@ -67,6 +67,31 @@ h2 { font-size: clamp(1.3rem, 2vw, 1.65rem); }
   font-weight: 600;
 }
 
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.95rem;
+}
+
+.doc-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  font-weight: 700;
+  padding: 0.58rem 0.85rem;
+  text-decoration: none;
+}
+
+.doc-link:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
 th, td {
@@ -91,10 +116,50 @@ th { font-size: 0.92rem; }
   font-size: 0.95rem;
 }
 
+.file-input {
+  position: relative;
+}
+
 input[type="file"],
 input[type="range"],
 button {
   width: 100%;
+}
+
+input[type="file"] {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-picker-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.file-input:focus-within .file-picker-control,
+.file-picker-control:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.file-name {
+  color: var(--muted);
+  font-size: 0.86rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 button {
@@ -342,6 +407,8 @@ button:hover { filter: brightness(1.05); }
 }
 
 .code {
+  display: block;
+  max-width: 100%;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: #121b20;
@@ -350,7 +417,9 @@ button:hover { filter: brightness(1.05); }
   font-size: 0.86rem;
   padding: 0.75rem;
   overflow-x: auto;
+  overflow-y: hidden;
   white-space: pre;
+  -webkit-overflow-scrolling: touch;
 }
 
 .math-formula {
@@ -381,6 +450,7 @@ button:hover { filter: brightness(1.05); }
 .code-blocks {
   display: grid;
   gap: 0.7rem;
+  min-width: 0;
 }
 
 .code-block {
@@ -388,6 +458,7 @@ button:hover { filter: brightness(1.05); }
   border-radius: 12px;
   padding: 0.7rem;
   background: #fff;
+  min-width: 0;
 }
 
 .interpretation-list {
@@ -527,7 +598,14 @@ button:hover { filter: brightness(1.05); }
     font-size: 0.9rem;
   }
 
-  .code,
+  .code {
+    font-size: 0.82rem;
+    white-space: pre;
+    overflow-x: auto;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
   .math-formula {
     font-size: 0.82rem;
     white-space: pre-wrap;

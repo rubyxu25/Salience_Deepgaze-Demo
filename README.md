@@ -56,14 +56,21 @@ python app.py
 
 - `http://127.0.0.1:5000`
 
-## DeepGaze IIE Dependency Note
+## Model Mode Note
 
-The app attempts to load `deepgaze_pytorch.DeepGazeIIE(pretrained=True)`.
+By default, the app runs a fast educational salience approximation based on image contrast and center bias.
 
-- If available, it runs DeepGaze IIE inference.
-- If unavailable, it falls back to a deterministic educational saliency heuristic so the full walkthrough remains functional.
+- This keeps uploads responsive for local demos and deployed web services.
+- It produces salience-style heatmaps, but it is not the official DeepGaze IIE model prediction.
+- To experiment with official DeepGaze IIE locally, install all model dependencies and run with `DEEPGAZE_USE_OFFICIAL=1`.
 
-This fallback keeps the learning interface usable, but it is not a replacement for official DeepGaze model predictions.
+The simplified mode keeps the learning interface usable, but it is not a replacement for official DeepGaze model predictions.
+
+## Running DeepGaze IIE Yourself
+
+If you want to go beyond the web demo and run DeepGaze IIE in your own Python script, see:
+
+- [`docs/deepgaze_iie_getting_started.md`](docs/deepgaze_iie_getting_started.md)
 
 ## Editing Content
 
