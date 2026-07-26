@@ -4,6 +4,7 @@ from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request, send_file, send_from_directory
 from PIL import Image
+from werkzeug.exceptions import HTTPException
 from werkzeug.utils import secure_filename
 
 from deepgaze_demo.config import ALLOWED_EXTENSIONS, MAX_INFERENCE_SIDE, MAX_UPLOAD_MB, UPLOAD_DIR
@@ -28,6 +29,14 @@ SAMPLE_LABELS = {
     "broken-bone.jpg": "Medical X-Ray",
     "poster.png": "Food Poster",
 }
+
+
+@app.errorhandler(Exception)
+def handle_unexpected_error(exc: Exception):
+    if isinstance(exc, HTTPException):
+        return exc
+    app.logger.exception("Unhandled server error")
+    return jsonify({"error": "Server error while generating saliency result.", "detail": str(exc)}), 500
 
 
 def _resize_for_inference(image: Image.Image, max_side: int) -> tuple[Image.Image, tuple[int, int] | None]:

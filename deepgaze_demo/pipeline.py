@@ -10,16 +10,10 @@ os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 import numpy as np
 from PIL import Image
 from scipy.ndimage import gaussian_filter, zoom
-from scipy.special import logsumexp
 
 from .config import DEFAULT_CENTERBIAS_SHAPE
 from .content import step_definitions
 from .utils import array_to_base64_png, format_shape, image_to_base64_png, normalize_to_uint8
-
-try:
-    import torch
-except Exception:  # pragma: no cover - optional runtime dependency
-    torch = None  # type: ignore[assignment]
 
 
 @dataclass
@@ -43,7 +37,9 @@ class DeepGazeRunner:
     """Runs DeepGaze IIE if available, otherwise falls back to a deterministic heuristic map."""
 
     def __init__(self, device: str = "cpu") -> None:
-        self.device = torch.device(device) if torch is not None else device
+        self.device_name = device
+        self.device = device
+        self._torch = None
         self._model = None
         self._mode = "heuristic-fallback"
         self._model_load_error: str | None = None
@@ -69,9 +65,14 @@ class DeepGazeRunner:
             return
         self._model_load_attempted = True
         self._model_load_error = None
-        if torch is None:
+        try:
+            import torch  # type: ignore
+
+            self._torch = torch
+            self.device = torch.device(self.device_name)
+        except Exception as exc:  # pragma: no cover - optional runtime dependency
             self._mode = "heuristic-fallback"
-            self._model_load_error = "PyTorch is not available in this environment."
+            self._model_load_error = f"PyTorch is not available in this environment: {exc}"
             return
         # Lazy import keeps the app runnable if deepgaze is not installed.
         try:
@@ -223,9 +224,9 @@ class DeepGazeRunner:
 
         chw = image.transpose(2, 0, 1)
         img_input = np.array([chw])
-        if torch is not None:
-            image_tensor = torch.from_numpy(img_input).to(self.device).float()
-            centerbias_tensor = torch.from_numpy(np.array([centerbias])).to(self.device).float()
+        if self._mode == "deepgaze_iie" and self._torch is not None:
+            image_tensor = self._torch.from_numpy(img_input).to(self.device).float()
+            centerbias_tensor = self._torch.from_numpy(np.array([centerbias])).to(self.device).float()
             image_tensor_shape = tuple(image_tensor.shape)
             centerbias_tensor_shape = tuple(centerbias_tensor.shape)
         else:
@@ -235,7 +236,7 @@ class DeepGazeRunner:
             centerbias_tensor_shape = tuple(centerbias_tensor.shape)
 
         if self._mode == "deepgaze_iie" and self._model is not None:
-            with torch.no_grad():
+            with self._torch.no_grad():
                 log_density_prediction = self._model(image_tensor, centerbias_tensor)
             log_density = log_density_prediction.detach().cpu().numpy()[0, 0]
         else:
