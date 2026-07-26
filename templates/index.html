@@ -10,34 +10,18 @@
   <main class="page-shell">
     <section class="hero" id="hero">
       <p class="kicker">Educational Demo</p>
-      <h1 id="intro-title">DeepGaze IIE Visual Salience Explorer</h1>
-      <p id="saliency-intro"></p>
-      <p id="deepgaze-intro"></p>
-      <p id="why-matters"></p>
-      <div class="bridge-box" id="bridge-statement"></div>
+      <h1>DeepGaze IIE Visual Salience Explorer</h1>
+      <p>
+        Upload an image to generate a fast, approximate saliency heatmap, then use the walkthroughs below to
+        understand how fixation distributions are interpreted.
+      </p>
+      <div class="bridge-box">
+        This web demo does not run the official DeepGaze IIE model. It uses an approximate saliency method for
+        quick education, while the model-process section explains the real DeepGaze IIE conceptually.
+      </div>
       <div class="hero-actions">
         <a class="doc-link" href="/getting-started" target="_blank" rel="noopener">Open Python Getting Started Guide</a>
       </div>
-    </section>
-
-    <section class="panel" id="mapping">
-      <h2>Classical Saliency Map vs DeepGaze IIE</h2>
-      <p class="muted">DeepGaze IIE does not simply draw a heatmap. It predicts a learned fixation distribution from image content plus center bias.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Traditional Saliency Logic</th><th>DeepGaze IIE Component</th><th>Interpretation</th></tr>
-          </thead>
-          <tbody id="mapping-body"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="panel" id="probability-journey">
-      <h2 id="prob-journey-title">How The Image Becomes A Probabilistic Saliency Map</h2>
-      <p class="muted" id="prob-journey-subtitle"></p>
-      <div id="prob-journey-stages" class="prob-journey-stages"></div>
-      <p class="muted" id="prob-journey-footnote"></p>
     </section>
 
     <section class="panel" id="upload-run">
@@ -74,8 +58,8 @@
           <img id="img-original" alt="Original upload" />
         </figure>
         <figure>
-          <figcaption>Predicted Heatmap</figcaption>
-          <img id="img-heatmap" alt="Predicted saliency heatmap" />
+          <figcaption>Approximate Heatmap</figcaption>
+          <img id="img-heatmap" alt="Demo-generated approximate saliency heatmap" />
         </figure>
         <figure>
           <figcaption>Overlay</figcaption>
@@ -95,46 +79,71 @@
       </div>
     </section>
 
-    <section class="panel" id="shape-tracing">
-      <h2>Data Transformation Journey</h2>
-      <p class="muted">From image file to probabilistic fixation map.</p>
-      <div class="journey" id="journey"></div>
-    </section>
-
-    <section class="panel" id="input-visual-pipeline">
-      <h2>Input-Driven Visual Pipeline</h2>
-      <p class="muted">Run an image to visualize how this specific input changes at each stage.</p>
-      <div id="visual-pipeline-status" class="muted">No run yet. Upload an image and click Run Workflow.</div>
-      <div id="visual-pipeline" class="visual-pipeline"></div>
-    </section>
-
-    <section class="panel" id="workflow">
-      <div class="workflow-head">
-        <h2>Interactive Workflow Walkthrough</h2>
-        <div class="mode-switch" role="tablist" aria-label="Explanation mode">
-          <button type="button" class="mode-btn active" data-mode="simple">Simple explanation</button>
-          <button type="button" class="mode-btn" data-mode="technical">Technical explanation</button>
+    <section class="panel" id="sample-section">
+      <div class="section-heading-row">
+        <div>
+          <h2>Sample Images</h2>
+          <p class="muted">Choose one prepared image to see the same approximate saliency workflow without uploading a file.</p>
         </div>
       </div>
-      <div class="tooltip-note">
-        Hover terms:
-        <span class="term" title="A multidimensional numeric container used by deep learning frameworks.">tensor</span>,
-        <span class="term" title="A log-scale representation of probability values.">log-density</span>,
-        <span class="term" title="A prior map encoding the tendency to look near the image center.">center bias</span>,
-        <span class="term" title="Reordering dimensions, e.g. from HWC to CHW.">transpose</span>
+      <div id="sample-grid" class="sample-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="panel education-panel" id="education">
+      <div class="education-head">
+        <div>
+          <h2>Learn What the Heatmap Means</h2>
+          <p class="muted">Switch between the real model concept and the walkthrough for your uploaded image.</p>
+        </div>
+        <div class="mode-switch" role="tablist" aria-label="Educational section">
+          <button type="button" class="mode-btn active" data-edu-tab="model-process" role="tab" aria-selected="true">
+            Model Process
+          </button>
+          <button type="button" class="mode-btn" data-edu-tab="your-image" role="tab" aria-selected="false">
+            Your Image
+          </button>
+        </div>
       </div>
-      <div id="step-cards" class="step-cards"></div>
-    </section>
 
-    <section class="panel" id="code-breakdown">
-      <h2>Code Breakdown</h2>
-      <p class="muted">The original DeepGaze demo script is decomposed into logical blocks below and mirrored in the workflow cards.</p>
-      <div id="code-blocks" class="code-blocks"></div>
-    </section>
+      <div class="edu-tab-panel active" id="model-process" role="tabpanel">
+        <h2>How DeepGaze IIE Predicts Where People Look</h2>
+        <p class="section-subtitle">
+          DeepGaze IIE treats attention as a probability distribution over possible fixation locations—not as a
+          binary object mask.
+        </p>
+        <div id="model-stage-list" class="stage-list"></div>
+        <article class="note-card">
+          <h3>Visualize the Distribution</h3>
+          <p>
+            The probability distribution can be mapped to a heatmap: warmer colors represent higher predicted
+            fixation density, and cooler colors represent lower predicted fixation density.
+          </p>
+          <p>
+            The colors are only a visualization of the distribution. They are not additional model outputs.
+          </p>
+        </article>
+        <article class="note-card">
+          <h3>Interpretation Note</h3>
+          <p>
+            Higher predicted fixation density does not necessarily mean that a region is more important, preferred,
+            understood, or relevant to a specific task. It only means that the model predicts that free-viewing
+            fixations are more likely to occur there.
+          </p>
+        </article>
+      </div>
 
-    <section class="panel" id="interpretation">
-      <h2>Interpretation and Limitations</h2>
-      <div id="interpretation-list" class="interpretation-list"></div>
+      <div class="edu-tab-panel" id="your-image" role="tabpanel">
+        <h2>How This Uploaded Image Becomes a Saliency Distribution</h2>
+        <p class="section-subtitle">
+          This walkthrough applies the same conceptual stages to your uploaded image. The displayed saliency result
+          is generated by this demo and should be interpreted as an approximation, not as an official DeepGaze IIE
+          inference.
+        </p>
+        <div id="image-walkthrough-empty" class="empty-state">
+          Upload an image and run the demo to see an input-specific walkthrough here.
+        </div>
+        <div id="image-stage-list" class="stage-list"></div>
+      </div>
     </section>
   </main>
 

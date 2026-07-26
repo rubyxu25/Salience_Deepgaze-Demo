@@ -31,6 +31,9 @@ class InferenceArtifacts:
     overlay_b64: str
     probability_min: float
     probability_max: float
+    image_width: int
+    image_height: int
+    heatmap_stats: dict[str, Any]
     model_mode: str
     centerbias_source: str
     warnings: list[str]
@@ -154,6 +157,47 @@ class DeepGazeRunner:
         salience = salience / np.maximum(salience.sum(), 1e-8)
         return np.log(np.maximum(salience, 1e-12)).astype(np.float32)
 
+    def _heatmap_stats(self, prediction: np.ndarray) -> dict[str, Any]:
+        h, w = prediction.shape
+        total = float(np.maximum(prediction.sum(), 1e-12))
+        y_peak, x_peak = np.unravel_index(int(np.argmax(prediction)), prediction.shape)
+
+        top = prediction[: h // 2, :]
+        bottom = prediction[h // 2 :, :]
+        left = prediction[:, : w // 2]
+        right = prediction[:, w // 2 :]
+        quadrants = {
+            "upper-left": prediction[: h // 2, : w // 2],
+            "upper-right": prediction[: h // 2, w // 2 :],
+            "lower-left": prediction[h // 2 :, : w // 2],
+            "lower-right": prediction[h // 2 :, w // 2 :],
+        }
+        quadrant_values = {name: float(values.sum() / total) for name, values in quadrants.items()}
+        strongest_quadrant = max(quadrant_values, key=quadrant_values.get)
+
+        yy, xx = np.ogrid[:h, :w]
+        cx = (w - 1) / 2.0
+        cy = (h - 1) / 2.0
+        rx = max(w * 0.28, 1.0)
+        ry = max(h * 0.28, 1.0)
+        center_mask = ((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2 <= 1.0
+        center_mass = float(prediction[center_mask].sum() / total)
+
+        def pct(value: float) -> float:
+            return round(value * 100.0, 1)
+
+        return {
+            "peak_x_percent": round((x_peak + 0.5) / max(w, 1) * 100.0, 1),
+            "peak_y_percent": round((y_peak + 0.5) / max(h, 1) * 100.0, 1),
+            "strongest_quadrant": strongest_quadrant,
+            "quadrants": {name: pct(value) for name, value in quadrant_values.items()},
+            "top_half_percent": pct(float(top.sum() / total)),
+            "bottom_half_percent": pct(float(bottom.sum() / total)),
+            "left_half_percent": pct(float(left.sum() / total)),
+            "right_half_percent": pct(float(right.sum() / total)),
+            "center_region_percent": pct(center_mass),
+        }
+
     def run(self, pil_image: Image.Image, use_centerbias: bool = True, overlay_alpha: float = 0.45) -> InferenceArtifacts:
         self._load_model()
         warnings: list[str] = []
@@ -232,6 +276,9 @@ class DeepGazeRunner:
             overlay_b64=array_to_base64_png(overlay_rgb),
             probability_min=float(prediction.min()),
             probability_max=float(prediction.max()),
+            image_width=w,
+            image_height=h,
+            heatmap_stats=self._heatmap_stats(prediction),
             model_mode=self._mode,
             centerbias_source=centerbias_source,
             warnings=warnings,
