@@ -286,7 +286,7 @@ class DeepGazeRunner:
         )
 
     def _to_heatmap_rgb(self, prediction: np.ndarray) -> np.ndarray:
-        from matplotlib import cm
+        from matplotlib import colormaps
 
         pred = np.asarray(prediction, dtype=np.float32)
         finite_mask = np.isfinite(pred)
@@ -306,7 +306,7 @@ class DeepGazeRunner:
         else:
             norm = np.clip((pred - low) / (high - low), 0.0, 1.0)
 
-        rgba = cm.get_cmap("jet")(norm)
+        rgba = colormaps.get_cmap("jet")(norm)
         rgb = (rgba[:, :, :3] * 255.0).astype(np.uint8)
         return rgb
 
